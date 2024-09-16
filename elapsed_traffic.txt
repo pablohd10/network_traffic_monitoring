@@ -1,1 +1,2 @@
-Bytes transmitidos: 3952873
+Bytes enviados: 183
+Bytes recibidos: 41534
