@@ -9,12 +9,12 @@ INITIAL_TRAFFIC_FILE="$HOME/PABLO/proyectos_personales/monitoreo_trafico_red/ini
 
 get_initial_traffic() {
     # Obtenemos el tráfico inicial
-    netstat -ib | grep en0 | awk '{print $5, $7}' > "$INITIAL_TRAFFIC_FILE"
+    netstat -ib | grep en0 -m 1| awk '{print $5, $7}' > "$INITIAL_TRAFFIC_FILE"
 }
 
 get_current_traffic() {
     # Obtenemos el tráfico actual
-    netstat -ib | grep en0 | awk '{print $5, $7}' > "$TOTAL_TRAFFIC_FILE"
+    netstat -ib | grep en0 -m 1| awk '{print $5, $7}' > "$TOTAL_TRAFFIC_FILE"
 }
 
 calculate_total_traffic() {
@@ -24,6 +24,7 @@ calculate_total_traffic() {
     local initial_traffic_sent=0
     local elapsed_traffic_received=0
     local elapsed_traffic_sent=0
+    local bytes_to_gb=1073741824  # 1 GiB = 2^30 bytes
 
     # Si no existe el archivo con el tráfico inicial, lo obtenemos
     if [ ! -f "$INITIAL_TRAFFIC_FILE" ]; then
@@ -42,9 +43,15 @@ calculate_total_traffic() {
     elapsed_traffic_sent=$((total_traffic_sent - initial_traffic_sent))
     elapsed_traffic_received=$((total_traffic_received - initial_traffic_received))
 
+    # Convertimos bytes a gigabytes
+    elapsed_traffic_sent_gb=$(echo "scale=6; $elapsed_traffic_sent / $bytes_to_gb" | bc)
+    elapsed_traffic_received_gb=$(echo "scale=6; $elapsed_traffic_received / $bytes_to_gb" | bc)
+
     # Guardamos el tráfico transcurrido en el archivo
     echo "Bytes enviados: $elapsed_traffic_sent" > "$ELAPSED_TRAFFIC_FILE"
+    echo "Gigabytes enviados: $elapsed_traffic_sent_gb" >> "$ELAPSED_TRAFFIC_FILE"
     echo "Bytes recibidos: $elapsed_traffic_received" >> "$ELAPSED_TRAFFIC_FILE"
+    echo "Gigabytes recibidos: $elapsed_traffic_received_gb" >> "$ELAPSED_TRAFFIC_FILE"
 }
 
 calculate_total_traffic

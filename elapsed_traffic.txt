@@ -1,2 +1,4 @@
-Bytes enviados: 476
-Bytes recibidos: 113623
+Bytes enviados: 96500
+Gigabytes enviados: .000089
+Bytes recibidos: 57809547
+Gigabytes recibidos: .053839
